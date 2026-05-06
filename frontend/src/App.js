@@ -12,7 +12,8 @@ function App() {
   skindarkening: ""
 });
 
-  const [result, setResult] = useState("");
+const [result, setResult] = useState("");
+const [confidence, setConfidence] = useState("");
 
   const handleChange = (e) => {
     setFeatures({
@@ -48,11 +49,13 @@ features: [
 
       const resultData = await response.json();
 
-      if (resultData.prediction === 1) {
-        setResult("⚠ PCOS Risk Detected");
-      } else {
-        setResult("✅ No PCOS Risk");
-      }
+if (resultData.prediction === 1) {
+  setResult("⚠ PCOS Risk Detected");
+} else {
+  setResult("✅ No PCOS Risk");
+}
+
+setConfidence(resultData.confidence + "%");
 
     } catch (error) {
       console.error(error);
@@ -82,7 +85,8 @@ features: [
 />
 
 <input
-  type="number"
+ type="number"
+step="0.1"
   name="bmi"
   placeholder="BMI"
   style={styles.input}
@@ -135,7 +139,11 @@ features: [
 
         </form>
 
-        {result && <h2 style={styles.result}>{result}</h2>}
+        {confidence && (
+  <h3 style={{ color: "#555" }}>
+    Confidence: {confidence}
+  </h3>
+)}
 
       </div>
 

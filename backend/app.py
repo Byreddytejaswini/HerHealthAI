@@ -27,10 +27,15 @@ def predict():
 
     prediction = model.predict(features)
 
+    probability = model.predict_proba(features)
+
+    confidence = round(max(probability[0]) * 100, 2)
+
     result = int(prediction[0])
 
     return jsonify({
-        "prediction": result
+        "prediction": result,
+        "confidence": confidence
     })
 
 # Run app
