@@ -22,11 +22,13 @@ df = df.fillna(df.mean())
 # Select features
 X = df[[
     "Age (yrs)",
-    "Weight (Kg)",
-    "Height(Cm)",
-    "BMI"
+    "BMI",
+    "Weight gain(Y/N)",
+    "Cycle(R/I)",
+    "hair growth(Y/N)",
+    "Pimples(Y/N)",
+    "Skin darkening (Y/N)"
 ]]
-
 # Target
 y = df["PCOS (Y/N)"]
 
