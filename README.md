@@ -18,3 +18,5 @@ AI-powered PCOS prediction and women’s health analysis system.
 
 ## Model Accuracy
 85% accuracy using Random Forest Classifier.
+
+“The confidence score represents the probability estimated by the Random Forest classifier and should not be considered a medical diagnosis.”
