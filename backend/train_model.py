@@ -7,8 +7,8 @@ import pickle
 # Load dataset
 df = pd.read_csv("../dataset/PCOS_data.csv")
 
-# Remove unnecessary columns
-df = df.drop(columns=["Sl. No", "Patient File No."])
+# Remove extra spaces from column names
+df.columns = df.columns.str.strip()
 
 # Replace '.' with NaN
 df = df.replace(".", pd.NA)
@@ -16,11 +16,18 @@ df = df.replace(".", pd.NA)
 # Convert all columns to numeric
 df = df.apply(pd.to_numeric, errors='coerce')
 
-# Fill missing values with column mean
+# Fill missing values
 df = df.fillna(df.mean())
 
-# Features and target
-X = df.drop("PCOS (Y/N)", axis=1)
+# Select features
+X = df[[
+    "Age (yrs)",
+    "Weight (Kg)",
+    "Height(Cm)",
+    "BMI"
+]]
+
+# Target
 y = df["PCOS (Y/N)"]
 
 # Split dataset
