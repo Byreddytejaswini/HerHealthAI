@@ -2,39 +2,62 @@ import React, { useState } from "react";
 
 function App() {
 
- const [features, setFeatures] = useState({
-  age: "",
-  bmi: "",
-  weightgain: "",
-  irregularperiods: "",
-  hairgrowth: "",
-  pimples: "",
-  skindarkening: ""
-});
+  const [features, setFeatures] = useState({
+    age: "",
+    weight: "",
+    height: "",
+    bmi: "",
+    weightgain: "",
+    irregularperiods: "",
+    hairgrowth: "",
+    pimples: "",
+    skindarkening: ""
+  });
 
-const [result, setResult] = useState("");
-const [confidence, setConfidence] = useState("");
+  const [result, setResult] = useState("");
+  const [confidence, setConfidence] = useState("");
+  const [recommendation, setRecommendation] = useState("");
+  const [riskLevel, setRiskLevel] = useState("");
 
   const handleChange = (e) => {
-    setFeatures({
+
+    const updatedFeatures = {
       ...features,
       [e.target.name]: e.target.value
-    });
+    };
+
+    // Auto BMI Calculation
+    const weight = parseFloat(updatedFeatures.weight);
+    const heightCm = parseFloat(updatedFeatures.height);
+
+    if (weight && heightCm) {
+
+      const heightM = heightCm / 100;
+
+      const bmi = (
+        weight / (heightM * heightM)
+      ).toFixed(1);
+
+      updatedFeatures.bmi = bmi;
+    }
+
+    setFeatures(updatedFeatures);
   };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
 
     const data = {
-features: [
-  Number(features.age),
-  Number(features.bmi),
-  Number(features.weightgain),
-  Number(features.irregularperiods),
-  Number(features.hairgrowth),
-  Number(features.pimples),
-  Number(features.skindarkening)
-]
+      features: [
+        Number(features.age),
+        Number(features.bmi),
+        Number(features.weightgain),
+        Number(features.irregularperiods),
+        Number(features.hairgrowth),
+        Number(features.pimples),
+        Number(features.skindarkening)
+      ]
     };
 
     try {
@@ -49,21 +72,44 @@ features: [
 
       const resultData = await response.json();
 
-if (resultData.prediction === 1) {
-  setResult("⚠ PCOS Risk Detected");
-} else {
-  setResult("✅ No PCOS Risk");
+      if (resultData.prediction === 1) {
+
+        setResult("⚠ PCOS Risk Detected");
+
+        setRecommendation(
+          "Maintain a healthy diet, exercise regularly, manage stress, and consult a gynecologist for proper medical guidance."
+        );
+
+      } else {
+
+        setResult("✅ No PCOS Risk");
+
+        setRecommendation(
+          "Continue maintaining a healthy lifestyle with balanced nutrition and regular physical activity."
+        );
+      }
+
+      setConfidence(resultData.confidence + "%");
+      if (resultData.confidence < 60) {
+  setRiskLevel("🟢 Low Risk");
+}
+else if (resultData.confidence < 80) {
+  setRiskLevel("🟠 Moderate Risk");
+}
+else {
+  setRiskLevel("🔴 High Risk");
 }
 
-setConfidence(resultData.confidence + "%");
-
     } catch (error) {
+
       console.error(error);
+
       setResult("❌ Error connecting to backend");
     }
   };
 
   return (
+
     <div style={styles.container}>
 
       <div style={styles.card}>
@@ -77,61 +123,88 @@ setConfidence(resultData.confidence + "%");
         <form onSubmit={handleSubmit}>
 
           <input
-  type="number"
-  name="age"
-  placeholder="Age"
-  style={styles.input}
-  onChange={handleChange}
-/>
+            type="number"
+            name="age"
+            placeholder="Age"
+            style={styles.input}
+            onChange={handleChange}
+          />
 
-<input
- type="number"
-step="0.1"
-  name="bmi"
-  placeholder="BMI"
-  style={styles.input}
-  onChange={handleChange}
-/>
+          <input
+            type="number"
+            step="0.1"
+            name="weight"
+            placeholder="Weight (kg)"
+            style={styles.input}
+            onChange={handleChange}
+          />
 
-<input
-  type="number"
-  name="weightgain"
-  placeholder="Weight Gain (0 or 1)"
-  style={styles.input}
-  onChange={handleChange}
-/>
+          <input
+            type="number"
+            step="0.1"
+            name="height"
+            placeholder="Height (cm)"
+            style={styles.input}
+            onChange={handleChange}
+          />
 
-<input
-  type="number"
-  name="irregularperiods"
-  placeholder="Irregular Periods (0 or 1)"
-  style={styles.input}
-  onChange={handleChange}
-/>
+          <input
+            type="number"
+            value={features.bmi}
+            placeholder="Calculated BMI"
+            style={styles.input}
+            readOnly
+          />
 
-<input
-  type="number"
-  name="hairgrowth"
-  placeholder="Hair Growth (0 or 1)"
-  style={styles.input}
-  onChange={handleChange}
-/>
+          <select
+            name="weightgain"
+            style={styles.input}
+            onChange={handleChange}
+          >
+            <option value="">Weight Gain</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
 
-<input
-  type="number"
-  name="pimples"
-  placeholder="Pimples (0 or 1)"
-  style={styles.input}
-  onChange={handleChange}
-/>
+          <select
+            name="irregularperiods"
+            style={styles.input}
+            onChange={handleChange}
+          >
+            <option value="">Irregular Periods</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
 
-<input
-  type="number"
-  name="skindarkening"
-  placeholder="Skin Darkening (0 or 1)"
-  style={styles.input}
-  onChange={handleChange}
-/>
+          <select
+            name="hairgrowth"
+            style={styles.input}
+            onChange={handleChange}
+          >
+            <option value="">Hair Growth</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+
+          <select
+            name="pimples"
+            style={styles.input}
+            onChange={handleChange}
+          >
+            <option value="">Pimples</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
+
+          <select
+            name="skindarkening"
+            style={styles.input}
+            onChange={handleChange}
+          >
+            <option value="">Skin Darkening</option>
+            <option value="1">Yes</option>
+            <option value="0">No</option>
+          </select>
 
           <button type="submit" style={styles.button}>
             Predict
@@ -139,11 +212,28 @@ step="0.1"
 
         </form>
 
+        {result && (
+          <h2 style={styles.result}>
+            {result}
+          </h2>
+        )}
+
         {confidence && (
-  <h3 style={{ color: "#555" }}>
-    Confidence: {confidence}
+          <h3 style={{ color: "#555" }}>
+            Confidence: {confidence}
+          </h3>
+        )}
+        {riskLevel && (
+  <h3 style={{ color: "#444" }}>
+    Risk Level: {riskLevel}
   </h3>
 )}
+
+        {recommendation && (
+          <p style={styles.recommendation}>
+            {recommendation}
+          </p>
+        )}
 
       </div>
 
@@ -154,19 +244,20 @@ step="0.1"
 const styles = {
 
   container: {
-    height: "100vh",
+    minHeight: "100vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     background: "#ffe6f0",
-    fontFamily: "Arial"
+    fontFamily: "Arial",
+    padding: "20px"
   },
 
   card: {
     background: "white",
     padding: "40px",
     borderRadius: "20px",
-    width: "350px",
+    width: "380px",
     boxShadow: "0px 0px 20px rgba(0,0,0,0.1)",
     textAlign: "center"
   },
@@ -187,7 +278,8 @@ const styles = {
     marginBottom: "15px",
     borderRadius: "10px",
     border: "1px solid #ccc",
-    fontSize: "16px"
+    fontSize: "16px",
+    outline: "none"
   },
 
   button: {
@@ -204,6 +296,13 @@ const styles = {
   result: {
     marginTop: "20px",
     color: "#333"
+  },
+
+  recommendation: {
+    marginTop: "15px",
+    color: "#555",
+    fontSize: "15px",
+    lineHeight: "1.5"
   }
 
 };
