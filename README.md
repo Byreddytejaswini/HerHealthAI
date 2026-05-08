@@ -37,13 +37,17 @@ The application predicts PCOS risk based on symptoms and provides confidence sco
 First, clone the repository:
 
 git clone https://github.com/Byreddytejaswini/HerHealthAI
+
 cd HerHealthAI
 
 Run the backend server:
 
 cd backend
+
 venv\Scripts\activate
+
 pip install -r requirements.txt
+
 python app.py
 
 The backend will run on:
@@ -52,7 +56,9 @@ http://127.0.0.1:5000
 Now run the frontend application:
 
 cd frontend
+
 npm install
+
 npm start
 
 The frontend will run on:
