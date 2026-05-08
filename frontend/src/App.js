@@ -72,6 +72,7 @@ function App() {
 
       const resultData = await response.json();
 
+      // Prediction Result
       if (resultData.prediction === 1) {
 
         setResult("⚠ PCOS Risk Detected");
@@ -89,16 +90,26 @@ function App() {
         );
       }
 
+      // Confidence Score
       setConfidence(resultData.confidence + "%");
-      if (resultData.confidence < 60) {
-  setRiskLevel("🟢 Low Risk");
-}
-else if (resultData.confidence < 80) {
-  setRiskLevel("🟠 Moderate Risk");
-}
-else {
-  setRiskLevel("🔴 High Risk");
-}
+
+      // Risk Level Logic
+      if (resultData.prediction === 1) {
+
+        if (resultData.confidence < 60) {
+          setRiskLevel("🟢 Low Risk");
+        }
+        else if (resultData.confidence < 80) {
+          setRiskLevel("🟠 Moderate Risk");
+        }
+        else {
+          setRiskLevel("🔴 High Risk");
+        }
+
+      } else {
+
+        setRiskLevel("🟢 No Significant Risk");
+      }
 
     } catch (error) {
 
@@ -223,11 +234,12 @@ else {
             Confidence: {confidence}
           </h3>
         )}
+
         {riskLevel && (
-  <h3 style={{ color: "#444" }}>
-    Risk Level: {riskLevel}
-  </h3>
-)}
+          <h3 style={{ color: "#444" }}>
+            Risk Level: {riskLevel}
+          </h3>
+        )}
 
         {recommendation && (
           <p style={styles.recommendation}>
